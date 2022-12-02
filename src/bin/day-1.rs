@@ -1,3 +1,4 @@
+
 fn main() {
     let input = get_input();
     println!("Got {} characters of input.", input.len());

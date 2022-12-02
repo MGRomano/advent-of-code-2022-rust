@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "command",
+            "name": "Run Current File",
+            "program": "cargo",
+            "args": ["r", "--bin", "day-2"]
+        }
+    ]
+}
