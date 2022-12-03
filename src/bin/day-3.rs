@@ -7,19 +7,43 @@ fn main() {
     let rucksacks = get_rucksacks(input);
     println!("Got {} rucksacks.", rucksacks.len());
 
-    let total_score = get_matching_items_total_score(rucksacks);
-    println!("Total Score: {}", total_score);
+    let all_matching_items = get_all_matching_items(rucksacks);
+    println!("All matching items: {:?}", all_matching_items);
+
+    let total_score = score_items(all_matching_items);
+    println!("Total score: {}", total_score);
 }
 
-fn get_matching_items_total_score(rucksacks :Vec<String>) -> i32 {
+fn score_items(all_matching_items :Vec<char>) -> i32 {
+    let mut total = 0;
+    for item in all_matching_items {
+        total += score_item(item);
+    }
+    return total;
+}
+
+fn score_item(item :char) -> i32{
+    let value = item as i32;
+    if item.is_lowercase() {
+        return value - 96;
+    } else {
+        return value - 64 + 26;
+    }
+}
+
+fn get_all_matching_items(rucksacks :Vec<String>) -> Vec<char> {
+    let mut all_matching_items = Vec::new();
+
     for rucksack in rucksacks {
         let sides = get_item_sides(rucksack);
 
         let matching_items = get_matching_items(sides);
-        println!("Matching Items: {:?}", matching_items);
+        for item in matching_items {
+            all_matching_items.push(item);
+        }
     }
 
-    return 0;
+    return all_matching_items;
 }
 
 fn get_matching_items(sides :Vec<HashSet<char>>) -> HashSet<char> {
