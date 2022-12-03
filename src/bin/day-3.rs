@@ -13,33 +13,45 @@ fn main() {
 
 fn get_matching_items_total_score(rucksacks :Vec<String>) -> i32 {
     for rucksack in rucksacks {
-        let mut left = HashSet::new();
-        let mut right = HashSet::new();
+        let sides = get_item_sides(rucksack);
 
-        for index in 0..rucksack.len() {
-            let item = rucksack.chars().nth(index).unwrap();
-            if index < rucksack.len() / 2 {
-                left.insert(item);
-            }else{
-                right.insert(item);
-            }
-        }
-
-        let matching_items = get_matching_items(left, right);
+        let matching_items = get_matching_items(sides);
         println!("Matching Items: {:?}", matching_items);
     }
 
     return 0;
 }
 
-fn get_matching_items(left :HashSet<char>, right :HashSet<char>) -> HashSet<char> {
+fn get_matching_items(sides :Vec<HashSet<char>>) -> HashSet<char> {
     let mut matches = HashSet::new();
+    let left = sides.get(0).unwrap();
+    let right = sides.get(1).unwrap();
+
     for item in left {
-        if right.contains(&item){
-            matches.insert(item);
+        if right.contains(item){
+            matches.insert(*item);
         }
     }
     return matches;
+}
+
+fn get_item_sides(rucksack :String) -> Vec<HashSet<char>> {
+    let mut left = HashSet::new();
+    let mut right = HashSet::new();
+
+    for index in 0..rucksack.len() {
+        let item = rucksack.chars().nth(index).unwrap();
+        if index < rucksack.len() / 2 {
+            left.insert(item);
+        }else{
+            right.insert(item);
+        }
+    }
+
+    let mut sides = Vec::new();
+    sides.push(left);
+    sides.push(right);
+    return sides;
 }
 
 fn get_rucksacks(input :String) -> Vec<String> {
