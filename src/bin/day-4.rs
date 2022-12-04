@@ -4,6 +4,26 @@ fn main() {
 
     let pairs = parse_pairs(input);
     println!("Got {} pairs.", pairs.len());
+
+    let overlap_count = count_overlaps(pairs);
+    println!("Got {} overlaps.", overlap_count);
+}
+
+fn count_overlaps(pairs :Vec<Pair>) -> i32 {
+    let mut overlap_count = 0;
+
+    for pair in pairs {
+        if is_overlapping(pair) {
+            overlap_count += 1;
+        }
+    }
+
+    return overlap_count;
+}
+
+fn is_overlapping(pair :Pair) -> bool {
+    return pair.first.min <= pair.second.min && pair.first.max >= pair.second.max ||
+           pair.first.min >= pair.second.min && pair.first.max <= pair.second.max;
 }
 
 fn parse_pairs(input :String) -> Vec<Pair> {
