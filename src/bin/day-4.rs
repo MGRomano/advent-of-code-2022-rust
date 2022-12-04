@@ -13,7 +13,7 @@ fn count_overlaps(pairs :Vec<Pair>) -> i32 {
     let mut overlap_count = 0;
 
     for pair in pairs {
-        if is_overlapping(pair) {
+        if is_overlapping_at_all(pair) {
             overlap_count += 1;
         }
     }
@@ -21,7 +21,14 @@ fn count_overlaps(pairs :Vec<Pair>) -> i32 {
     return overlap_count;
 }
 
-fn is_overlapping(pair :Pair) -> bool {
+fn is_overlapping_at_all(pair :Pair) -> bool {
+    return pair.first.min >= pair.second.min && pair.first.min <= pair.second.max ||
+           pair.first.max >= pair.second.min && pair.first.max <= pair.second.max ||
+           pair.second.min >= pair.first.min && pair.second.min <= pair.first.max ||
+           pair.second.max >= pair.first.min && pair.second.max <= pair.first.max;
+}
+
+fn is_completely_contained(pair :Pair) -> bool {
     return pair.first.min <= pair.second.min && pair.first.max >= pair.second.max ||
            pair.first.min >= pair.second.min && pair.first.max <= pair.second.max;
 }
