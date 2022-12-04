@@ -38,7 +38,7 @@ struct Troop{
 }
 
 fn all_matching_badges(rucksacks :Vec<String>) -> Vec<char> {
-    let all_matching_badges = Vec::new();
+    let mut all_matching_badges = Vec::new();
 
     let troops = get_troops(rucksacks);
     for troop in troops{
@@ -46,6 +46,10 @@ fn all_matching_badges(rucksacks :Vec<String>) -> Vec<char> {
         only_matches = get_only_matches(troop.first, only_matches);
         only_matches = get_only_matches(troop.second, only_matches);
         only_matches = get_only_matches(troop.third, only_matches);
+
+        for matching_item in only_matches{
+            all_matching_badges.push(matching_item);
+        }
     }
 
     return all_matching_badges;
