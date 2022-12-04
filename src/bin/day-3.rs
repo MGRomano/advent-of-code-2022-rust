@@ -7,10 +7,10 @@ fn main() {
     let rucksacks = get_rucksacks(input);
     println!("Got {} rucksacks.", rucksacks.len());
 
-    let all_matching_items = get_all_matching_items(rucksacks);
-    println!("All matching items: {:?}", all_matching_items);
+    let all_matching_badges = all_matching_badges(rucksacks);
+    println!("All matching items: {:?}", all_matching_badges);
 
-    let total_score = score_items(all_matching_items);
+    let total_score = score_items(all_matching_badges);
     println!("Total score: {}", total_score);
 }
 
@@ -31,32 +31,36 @@ fn score_item(item :char) -> i32{
     }
 }
 
-fn get_all_matching_items(rucksacks :Vec<String>) -> Vec<char> {
-    let mut all_matching_items = Vec::new();
-
-    for rucksack in rucksacks {
-        let sides = get_item_sides(rucksack);
-
-        let matching_items = get_matching_items(sides);
-        for item in matching_items {
-            all_matching_items.push(item);
-        }
-    }
-
-    return all_matching_items;
+struct Troop{
+    first: Vec<HashSet<char>>,
+    second: Vec<HashSet<char>>,
+    third: Vec<HashSet<char>>
 }
 
-fn get_matching_items(sides :Vec<HashSet<char>>) -> HashSet<char> {
-    let mut matches = HashSet::new();
-    let left = sides.get(0).unwrap();
-    let right = sides.get(1).unwrap();
+fn all_matching_badges(rucksacks :Vec<String>) -> Vec<char> {
+    let all_matching_badges = Vec::new();
 
-    for item in left {
-        if right.contains(item){
-            matches.insert(*item);
-        }
+    let troops = get_troops(rucksacks);
+    for troop in troops{
+        println!("Troops:\n {:?}\n {:?}\n {:?}", troop.first, troop.second, troop.third);
     }
-    return matches;
+
+    return all_matching_badges;
+}
+
+fn get_troops(rucksacks :Vec<String>) -> Vec<Troop> {
+    let mut troops = Vec::new();
+
+    for index in (0..rucksacks.len()).step_by(3) {
+        let troop = Troop {
+            first: get_item_sides(rucksacks.get(index).unwrap().to_string()),
+            second: get_item_sides(rucksacks.get(index+1).unwrap().to_string()),
+            third: get_item_sides(rucksacks.get(index+2).unwrap().to_string())
+        };
+        troops.push(troop);
+    }
+
+    return troops;
 }
 
 fn get_item_sides(rucksack :String) -> Vec<HashSet<char>> {
