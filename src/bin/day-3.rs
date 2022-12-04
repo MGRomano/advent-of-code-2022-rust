@@ -42,10 +42,28 @@ fn all_matching_badges(rucksacks :Vec<String>) -> Vec<char> {
 
     let troops = get_troops(rucksacks);
     for troop in troops{
-        println!("Troops:\n {:?}\n {:?}\n {:?}", troop.first, troop.second, troop.third);
+        let mut only_matches = HashSet::new();
+        only_matches = get_only_matches(troop.first, only_matches);
+        only_matches = get_only_matches(troop.second, only_matches);
+        only_matches = get_only_matches(troop.third, only_matches);
     }
 
     return all_matching_badges;
+}
+
+fn get_only_matches(elf_pack :Vec<HashSet<char>>, previous_matches :HashSet<char>) -> HashSet<char> {
+    let fill_all = previous_matches.is_empty();
+    let mut current_matches = HashSet::new();
+
+    for side in elf_pack {
+        for item in side {
+            if fill_all || previous_matches.contains(&item) {
+                current_matches.insert(item);
+            }
+        }
+    }
+
+    return current_matches;
 }
 
 fn get_troops(rucksacks :Vec<String>) -> Vec<Troop> {
