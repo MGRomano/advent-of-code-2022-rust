@@ -30,7 +30,7 @@ struct Stack{
 }
 
 struct MoveCommand {
-    count: i32,
+    count: usize,
     from: usize,
     to: usize
 }
@@ -45,7 +45,8 @@ fn process_moves(mut stacks :Vec<Stack>, moves :Vec<MoveCommand>) -> Vec<Stack>{
     for move_command in moves {
         for _move_count in 0..move_command.count {
             let crate_letter = stacks[move_command.from - 1].boxes.pop();
-            stacks[move_command.to - 1].boxes.push(crate_letter.unwrap());
+            let insert_index = stacks[move_command.to - 1].boxes.len() - _move_count;
+            stacks[move_command.to - 1].boxes.insert(insert_index, crate_letter.unwrap());
         }
     }
     return stacks;
@@ -65,7 +66,7 @@ fn parse_moves(move_setup :String) -> Vec<MoveCommand> {
 fn parse_move(move_line :String) -> MoveCommand {
     let chunks = move_line.split(" ").collect::<Vec<&str>>();
     return MoveCommand {
-        count: chunks[1].parse::<i32>().unwrap(),
+        count: chunks[1].parse::<usize>().unwrap(),
         from: chunks[3].parse::<usize>().unwrap(),
         to: chunks[5].parse::<usize>().unwrap()
     };
