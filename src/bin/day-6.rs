@@ -13,21 +13,20 @@ fn main() {
 fn print_message_starts(messages :&Vec<String>){
     let mut count = 1;
     for message in messages {
-        let message_start = get_message_start(&message);
+        let message_start = get_message_start(&message, 14);
         println!("Message {} starts at {}.", count, message_start);
         count += 1;
     }
 }
 
-fn get_message_start(message :&String) -> usize {
-    for i in 3..message.len() {
+fn get_message_start(message :&String, length :usize) -> usize {
+    for i in (length-1)..message.len() {
         let mut unique_characters: HashSet<char> = HashSet::new();
-        unique_characters.insert(message.chars().nth(i).unwrap());
-        unique_characters.insert(message.chars().nth(i-1).unwrap());
-        unique_characters.insert(message.chars().nth(i-2).unwrap());
-        unique_characters.insert(message.chars().nth(i-3).unwrap());
+        for j in 0..length {
+            unique_characters.insert(message.chars().nth(i-j).unwrap());
+        }
 
-        if unique_characters.len() == 4 {
+        if unique_characters.len() == length {
             return i+1;
         }
         unique_characters.clear();
