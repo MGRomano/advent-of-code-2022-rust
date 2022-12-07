@@ -14,13 +14,17 @@ fn main() {
     let directory_sizes = get_directory_sizes(&terminal_state);
     println!("Directory Sizes: {:?}", directory_sizes);
 
-    let max_size = 100000;
-    let matching_directories = find_directories_under(&directory_sizes, &max_size);
-    println!("Matching Directories: {:?}", matching_directories);
+    let file_system_total_size = directory_sizes.get("/").unwrap();
+    println!("Total used space: {:?}", file_system_total_size);
 
-    let sizes_sum :u64 = matching_directories.iter().map(|(_directory, size)| *size).sum();
-    println!("Sum of matching directories: {:?}", sizes_sum);
-    //1002724
+    let available_disk_space = 70000000;
+    let space_needed_for_update = 30000000;
+    let free_space = available_disk_space - file_system_total_size;
+    let space_to_free_up = space_needed_for_update - free_space;
+    println!("Need to free up: {:?}", space_to_free_up);
+
+    let directory_to_delete = find_directory_to_delete(directory_sizes, space_to_free_up);
+    println!("Directory to delete: {:?}", directory_to_delete);
 }
 
 struct TerminalState {
@@ -33,6 +37,16 @@ impl std::fmt::Display for TerminalState {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "Current Directory: {:?}\nDirectories: {:?}\nSizes: {:?}", self.current_directory, self.directories, self.file_sizes)
     }
+}
+
+fn find_directory_to_delete(directory_sizes :HashMap<String, u64>, space_to_free_up :u64) -> u64 {
+    let mut current_smallest = 0;
+    for (_directory, size) in directory_sizes {
+        if size > space_to_free_up && (size < current_smallest || current_smallest == 0){
+            current_smallest = size;
+        }
+    }
+    return current_smallest;
 }
 
 fn get_directory_sizes(state :&TerminalState) -> HashMap<String, u64>{
@@ -51,16 +65,6 @@ fn get_directory_sizes(state :&TerminalState) -> HashMap<String, u64>{
         directory_sizes.insert(directory.to_string(), directory_size);
     }
     return directory_sizes;
-}
-
-fn find_directories_under<'a>(directory_sizes :&'a HashMap<String, u64>, max_size :&'a u64) -> HashMap<&'a String, &'a u64> {
-    let mut matching_directories = HashMap::new();
-    for (directory, directory_size) in directory_sizes {
-        if directory_size <= max_size {
-            matching_directories.insert(directory, directory_size);
-        }
-    }
-    return matching_directories;
 }
 
 fn process_commands(commands :&Vec<String>) -> TerminalState {
@@ -153,6 +157,6 @@ $ ls
 4060174 j
 8033020 d.log
 5626152 d.ext
-    7214296 k");
+7214296 k");
     return input;
 }
