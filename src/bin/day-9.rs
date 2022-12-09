@@ -11,19 +11,18 @@ fn main() {
     println!("Initial state: {}", state);
 
     state = process_moves(state, moves);
-    println!("Locations visited: {:?}", state.locations_visited);
-    println!("Final unique count: {}", state.locations_visited.len());
+    println!("Locations visited: {:?}", state.tail_locations_visited);
+    println!("Final unique count: {}", state.tail_locations_visited.len());
 }
 
 struct GameState {
-    head: [i32; 2],
-    tail: [i32; 2],
-    locations_visited: HashSet<[i32; 2]>
+    knots: Vec<[i32; 2]>,
+    tail_locations_visited: HashSet<[i32; 2]>
 }
 
 impl std::fmt::Display for GameState {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Head: {:?} - Tail: {:?}", self.head, self.tail)
+        write!(f, "Knots: {:?}", self.knots)
     }
 }
 
@@ -40,9 +39,11 @@ fn process_moves(mut state :GameState, moves :Vec<String>) -> GameState {
 
 fn process_move(mut state :GameState, direction :char) -> GameState {
     let move_direction = get_move_direction(&direction);
-    state.head = array_add(state.head, move_direction);
-    state.tail = catch_up(state.head, state.tail);
-    state.locations_visited.insert(state.tail);
+    state.knots[0] = array_add(state.knots[0], move_direction);
+    for i in 1..state.knots.len() {
+        state.knots[i] = catch_up(state.knots[i-1], state.knots[i]);
+    }
+    state.tail_locations_visited.insert(*state.knots.last().unwrap());
     return state;
 }
 
@@ -75,11 +76,14 @@ fn get_move_direction(direction :&char) -> [i32; 2] {
 }
 
 fn initialize_game_state() -> GameState {
-    return GameState{
-        head: [0, 0],
-        tail: [0, 0],
-        locations_visited: HashSet::new()
+    let mut state = GameState{
+        knots: Vec::new(),
+        tail_locations_visited: HashSet::new()
     };
+    for _i in 0..10 {
+        state.knots.push([0,0]);
+    }
+    return state;
 }
 
 fn get_moves(input :&String) -> Vec<String> {
@@ -92,13 +96,13 @@ fn get_moves(input :&String) -> Vec<String> {
 
 fn get_input() -> String {
     let mut input = String::new();
-    input.push_str("R 4
-U 4
-L 3
-D 1
-R 4
-D 1
-L 5
-R 2");
+    input.push_str("R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20");
     return input;
 }
