@@ -12,15 +12,23 @@ struct SystemState{
     register: i32,
     instructions: Vec<String>,
     current_instruction_index: usize,
-    is_processing: bool
+    is_processing: bool,
+    screen: Vec<char>
 }
 
-fn process_commands(mut state :SystemState){
+fn process_commands(mut state :SystemState) {
     let mut cycle = 1;
     let mut signal_sum = 0;
 
     while is_still_processing(&state) && cycle < 10000 {
         let current_command = get_current_command(&state);
+
+        let position = (cycle - 1) % 40;
+        if position >= state.register - 1 && position <= state.register + 1{
+            state.screen.push('#');
+        } else {
+            state.screen.push('.');
+        }
 
         if "noop" == current_command {
             state.current_instruction_index += 1;
@@ -45,6 +53,21 @@ fn process_commands(mut state :SystemState){
     }
 
     println!("Total Signal Strength: {}", signal_sum);
+    print_screen(&state.screen);
+}
+
+fn print_screen(screen :&Vec<char>){
+    let screen_width = 40;
+    let mut current_column = 0;
+
+    for pixel in screen {
+        print!("{}", pixel);
+        current_column += 1;
+        if current_column == screen_width {
+            current_column = 0;
+            println!(" <-- Row complete ");
+        }
+    }
 }
 
 fn get_current_command(state :&SystemState) -> String {
@@ -62,7 +85,8 @@ fn initialize_system_state(input :&String) -> SystemState{
         register: 1,
         instructions: instruction_list,
         current_instruction_index: 0,
-        is_processing: false
+        is_processing: false,
+        screen: Vec::new()
     };
     return state;
 }
